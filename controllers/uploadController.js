@@ -35,7 +35,10 @@ const upload = multer({ storage: storage }).single("imagefile");
 
 // Entry function for controller
 function uploadEntry(req, res, next) {
+  console.log(req.file)
   upload(req, res, function(err) {
+    console.log(req.file)
+
     let uploadedFilename = req.file.filename;
     if (!validateType(req.file)) {
       res.status(400).send("Invalid file type");

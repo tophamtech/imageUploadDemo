@@ -2,16 +2,21 @@ const chai = require("chai");
 const fs = require("fs");
 const chaiHttp = require("chai-http");
 const app = require("../server");
+const chaiImage = require("chai-image").chaiImage;
+
+
 
 var request = require("request");
 
 const { expect } = chai;
 
-chai.use(chaiHttp);
+chai.use(chaiImage);
 
-const imageStream = fs.createReadStream(`${__dirname}/../test/resources/platypus.gif`)
+const imageStream = fs.createReadStream(
+  `${__dirname}/../test/resources/platypus.gif`
+);
 
-let imageLocation = ''
+let imageLocation = "";
 
 var options = {
   method: "POST",
@@ -30,25 +35,49 @@ var options = {
   }
 };
 
-
 describe("Test for upload route", () => {
   it("should return 200 and upload image", function(done) {
-        request(options, function(error, response, body) {
-        bodyResult = body;
-        imageLocation = 'http://' + ((JSON.parse(body)).gif_location)
-        expect(bodyResult).to.include("upload\":\"ok\"") 
-        done()
-    })
- });
+    request(options, function(error, response, body) {
+      bodyResult = body;
+      gifImageLocation = "http://" + JSON.parse(body).gif_location;
+      jpgImageLocation = "http://" + JSON.parse(body).jpg_location;
+      pngImageLocation = "http://" + JSON.parse(body).png_location;
+      expect(bodyResult).to.include('upload":"ok"');
+      done();
+    });
+  });
 });
 
-  describe("Test for download route", () => {
-    it("should return test image", function(done) {
-          request(imageLocation, function(error, response, body) {
-          let testImage = (fs.readFileSync(`${__dirname}/../test/resources/platypus.gif`)).toString();
-          let returnImage = (response.body).toString()
-          expect(testImage).to.equal(returnImage) 
-          done()
-      })
-   });
+describe("Test for download route", () => {
+  it("should return test gif image", function(done) {
+    request(gifImageLocation, function(error, response, body) {
+      let testImage = fs
+        .readFileSync(`${__dirname}/../test/resources/platypus.gif`)
+        .toString();
+      let returnImage = response.body.toString();
+      expect(testImage).to.contain(returnImage);
+      done();
+    });
   });
+  it("should return test jpg image", function(done) {
+    request(jpgImageLocation, function(error, response, body) {
+      let testImage = fs
+        .readFileSync(`${__dirname}/../test/resources/platypus.jpg`)
+        .toString();
+      let returnImage = response.body.toString();
+      expect(testImage).to.contain(returnImage);
+      done();
+    });
+  });
+
+  it("should return test png image", function(done) {
+    request(pngImageLocation, function(error, response, body) {
+      let testImage = fs
+        .readFileSync(`${__dirname}/../test/resources/platypus.png`)
+        .toString();
+      let returnImage = response.body.toString();
+      expect(testImage).to.contain(returnImage);
+      done();
+    });
+    });
+});
