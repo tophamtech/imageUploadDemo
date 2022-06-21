@@ -1,5 +1,7 @@
 const path = require("path");
 const sharp = require("sharp");
+const log = require('../utils/logger')
+
 
 // File type conversion function
 function convertFile(inputFile) {
@@ -16,6 +18,8 @@ function convertFile(inputFile) {
         .toFile(
           `${__dirname}/../uploads/${typelessName}.${fileExt}`,
           (err, info) => {
+            if (err) {log.error(`Image conv error: ${err}`)}
+            if (info) {log.info(`Image upload info: ${JSON.stringify(info)}`)}
           }
         );
       }

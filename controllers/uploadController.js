@@ -2,6 +2,8 @@ const multer = require("multer");
 const path = require("path");
 const config = require("../config.json");
 const convertFile = require("./imageConversion")
+const log = require('../utils/logger')
+
 
 // Validate only image types can be uploaded
 function validateType(file) {
@@ -35,12 +37,17 @@ const upload = multer({ storage: storage }).single("imagefile");
 
 // Entry function for controller
 function uploadEntry(req, res, next) {
-  console.log(req.file)
+  log.info('Upload controller hit')
   upload(req, res, function(err) {
-    console.log(req.file)
+    if (err) {
+      res.status(500).json({
+        message: "Internal error"
+      })
+    }
 
     let uploadedFilename = req.file.filename;
     if (!validateType(req.file)) {
+      log.info('Invalid file type')
       res.status(400).send("Invalid file type");
     } else {
       convertFile(uploadedFilename);
@@ -60,4 +67,5 @@ function uploadEntry(req, res, next) {
   });
 }
 
-module.exports = uploadEntry;
+exports.uploader = uploadEntry;
+exports.validateType = validateType;

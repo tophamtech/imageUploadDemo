@@ -1,5 +1,6 @@
 {
     "port": 3001,
     "baseurl": "localhost:3001",
-    "downloadpath": "download"
+    "downloadpath": "download",
+    "loglevel": "warn"
 }
